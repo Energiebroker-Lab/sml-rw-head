@@ -2,6 +2,7 @@
 easy meter logic
 """
 import time
+from typing import List, Annotated
 
 from meters.meter import Meter
 
@@ -63,7 +64,7 @@ class Easy(Meter):
         #self._transition()
         self._pause()
 
-    def enter_pin(self, pin_array: [int]):
+    def enter_pin(self, pin_array: Annotated[List[int], 4]):
         """ send pulse counts defined by the pin_array parameter """
         self._enter_pin_mode()
         for i in pin_array:
@@ -76,7 +77,7 @@ class Easy(Meter):
                     self._pause()
             self._transition()
 
-    def toggle(self, pin_array: [int], menu_item: str):
+    def toggle(self, pin_array: Annotated[List[int], 4], menu_item: str):
         """
         Traverses through the menu and toggles the menu_item
         :param pin_array: pin of the meter
@@ -97,7 +98,7 @@ class Easy(Meter):
                 self._long_pulse()
                 self._pause()
 
-    def clear(self, pin_array: [int], menu_item: str):
+    def clear(self, pin_array: Annotated[List[int], 4], menu_item: str):
         """
         Traverses through the menu and clears the history of menu_item
         :param pin_array: pin of the meter
@@ -118,7 +119,7 @@ class Easy(Meter):
                 self._long_pulse()
                 self._pause()
 
-    def show(self, pin_array: [int], menu_item: str):
+    def show(self, pin_array: Annotated[List[int], 4], menu_item: str):
         """
         Traverses through the menu to the location of menu_item
         :param pin_array: pin of the meter

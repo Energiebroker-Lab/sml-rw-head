@@ -24,7 +24,7 @@ class DetectSerial:
             if w.serial_number == self.ftdi_serial:  # Match ID with the correct port
                 self.port_device = w.device  # Store the device name to later open port with.
 
-    def get_port(self) -> str:
+    def get_port(self) -> str | None:
         """
         returns the device with the correct serial number
         :return: Serial port

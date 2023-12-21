@@ -1,6 +1,8 @@
 """
 Handles toggle info for all meters
 """
+from typing import Annotated, List
+
 from loguru import logger
 from meters.dd3 import DD3
 from meters.ehz import EHZ
@@ -8,7 +10,7 @@ from meters.mt175 import MT175
 from meters.mt681 import MT681
 
 
-def toggle_info(meter_type: str, ftdi_serial: str, pin: [int, int, int, int]):
+def toggle_info(meter_type: str, ftdi_serial: str, pin: Annotated[List[int], 4]):
     """
     Selects the correct logic for the supplied meter and toggles info mode
     :param meter_type: mt681, mt175, ehz, dd3
@@ -25,10 +27,9 @@ def toggle_info(meter_type: str, ftdi_serial: str, pin: [int, int, int, int]):
     elif meter_type.lower() == 'dd3':
         meter = DD3(ftdi_serial, pin)
 
-
     if meter is None:
         logger.warning(f'Meter {meter_type} is not supported')
         return
 
-    meter.toggleInfoMode()
+    meter.toggle_info_mode()
     del meter

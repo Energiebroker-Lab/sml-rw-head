@@ -1,6 +1,8 @@
 """
 Meter baseclass
 """
+from typing import Annotated, List
+
 from gpio import Gpio
 
 
@@ -12,7 +14,7 @@ class Meter:
     _pin = [0, 0, 0, 0]
     _debug = False
 
-    def __init__(self, ftdi_serial: str, pin: [int, int, int, int]):
+    def __init__(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
         self._gpio.open(ftdi_serial)
         self._pin = pin
 

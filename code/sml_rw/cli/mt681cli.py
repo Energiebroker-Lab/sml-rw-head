@@ -1,6 +1,8 @@
 """
 MT681 meter cli
 """
+from typing import Annotated, List
+
 from loguru import logger
 
 from meters.mt681 import MT681
@@ -38,7 +40,7 @@ class Mt681Cli:
         byte_reader = SmlReader(ftdi_serial, log_bytes=True, log_file='logBytesMT681.log')
         byte_reader.run()
 
-    def pin(self, ftdi_serial: str, pin: [int, int, int, int]):
+    def pin(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
         """
         enters pin of the meter
         :param ftdi_serial: serial number of the ftdi device

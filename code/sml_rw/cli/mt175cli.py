@@ -1,6 +1,8 @@
 """
 MT175 meter logic
 """
+from typing import Annotated, List
+
 from loguru import logger
 
 from meters.mt175 import MT175
@@ -39,7 +41,7 @@ class Mt175Cli:
         byte_reader = SmlReader(ftdi_serial, log_bytes=True, log_file='logBytesMT175.log')
         byte_reader.run()
 
-    def pin(self, ftdi_serial: str, pin: [int, int, int, int]):
+    def pin(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
         """
         enters pin of the meter
         :param ftdi_serial: serial number of the ftdi device
