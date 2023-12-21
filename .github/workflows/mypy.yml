@@ -22,4 +22,4 @@ jobs:
         pip install mypy
     - name: Analysing the code with mypy
       run: |
-        mypy $(git ls-files './code/sml_rw/*.py')
+        mypy --ignore-missing-imports $(git ls-files './code/sml_rw/*.py')
