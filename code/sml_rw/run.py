@@ -1,3 +1,6 @@
+"""
+Runner of the cli app
+"""
 #!/usr/bin/env python
 import fire
 from cli.cli import Cli

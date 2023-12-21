@@ -1,3 +1,7 @@
+"""
+sml reader
+"""
+import sys
 from threading import Timer
 import serial
 import smllib
@@ -6,26 +10,41 @@ from detect import DetectSerial
 
 
 class WatchdogTimer:
-    def __init__(self, timeout: float, userHandler=None):
+    """
+    used to separate sml streams
+    """
+    def __init__(self, timeout: float, user_handler=None):
         self.timeout = timeout
-        self.handler = userHandler if userHandler is not None else self.defaultHandler
+        self.handler = user_handler if user_handler is not None else self.default_handler
         self.timer = Timer(self.timeout, self.handler)
         self.timer.start()
 
     def reset(self):
+        """
+        resets the timer
+        """
         self.timer.cancel()
         self.timer = Timer(self.timeout, self.handler)
         self.timer.start()
 
     def stop(self):
+        """
+        stops the timer
+        """
         self.timer.cancel()
 
-    def defaultHandler(self):
-        raise self
+    def default_handler(self):
+        """
+        no handler supplied -> raises Exception
+        """
+        raise AttributeError
 
 
 class SmlReader:
-    bytesBuffer = b''
+    """
+    reader class
+    """
+    bytes_buffer = b''
     crc16_x25_table = [
         0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
         0x8C48, 0x9DC1, 0xAF5A, 0xBED3, 0xCA6C, 0xDBE5, 0xE97E, 0xF8F7,
@@ -61,35 +80,34 @@ class SmlReader:
         0x7BC7, 0x6A4E, 0x58D5, 0x495C, 0x3DE3, 0x2C6A, 0x1EF1, 0x0F78
     ]
 
-    def __init__(self, ftdiSerial, logSml: bool = False, logBytes: bool = False, logFile='reader.log'):
-        self.ftdiSerial = ftdiSerial
-        self.logSml = logSml
-        self.logBytes = logBytes
-        self.logFile = logFile
+    def __init__(
+            self,
+            ftdi_serial,
+            log_sml: bool = False,
+            log_bytes: bool = False,
+            log_file='reader.log'
+    ):
+        self.ftdi_serial = ftdi_serial
+        self.log_sml = log_sml
+        self.log_bytes = log_bytes
+        self.log_file = log_file
 
-    def crc16_x25(self):
-        """ not used at the moment
-            Todo: try to make it work
+    def watchdog_timer_ovf(self, only_obis: bool = False):
         """
-        crcsum = 0xffff
-        global crc16_x25_table
-        for byte in self.bytesBuffer:
-            crcsum = crc16_x25_table[(ord(byte) ^ crcsum) & 0xff] ^ (crcsum >> 8 & 0xff)
-        crcsum ^= 0xffff
-        return crcsum
-
-    def watchdogTimerOvf(self, onlyObis: bool = False):
-        if self.logBytes:
-            with open(self.logFile, "ab") as myfile:
-                myfile.write(self.bytesBuffer)
+        Called when the sml stream ends
+        :param only_obis: True -> extrace only the obis values
+        """
+        if self.log_bytes:
+            with open(self.log_file, "ab") as myfile:
+                myfile.write(self.bytes_buffer)
         stream = smllib.SmlStreamReader()
-        stream.add(self.bytesBuffer)
+        stream.add(self.bytes_buffer)
         sml_frame = stream.get_frame()
         if sml_frame is None:
             logger.info('Bytes missing')
             return
 
-        if onlyObis:
+        if only_obis:
             # Shortcut to extract all values without parsing the whole frame
             obis_values = sml_frame.get_obis()
             for msg in obis_values:
@@ -99,36 +117,44 @@ class SmlReader:
         else:
             # return all values but slower
             parsed_msgs = sml_frame.parse_frame()
-            # todo: extract interesting obis and values -> forward to data aggregator
             for msg in parsed_msgs:
                 # prints a nice overview over the received values
                 logger.info('Frame: {}', msg.format_msg())
-                if self.logSml:
-                    with open(self.logFile, "a") as myfile:
+                if self.log_sml:
+                    with open(self.log_file, "a", encoding="utf-8") as myfile:
                         myfile.write(msg.format_msg())
 
     def run(self):
+        """
+        starts listening to the stream
+        """
         try:
-            detectSerial = DetectSerial(ftdiSerial=self.ftdiSerial)  # Seriennummer der Lesekopfs
-            my_tty = serial.Serial(port=detectSerial.getPort(), baudrate=9600, parity=serial.PARITY_NONE,
-                                   stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=0)
+            detect_serial = DetectSerial(ftdi_serial=self.ftdi_serial)  # Seriennummer der Lesekopfs
+            my_tty = serial.Serial(
+                port=detect_serial.get_port(),
+                baudrate=9600,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                timeout=0
+            )
             logger.info(my_tty.portstr + " geöffnet\n\n")
             my_tty.close()
             my_tty.open()
             try:
                 my_tty.reset_input_buffer()
                 my_tty.reset_output_buffer()
-                watchdog = WatchdogTimer(0.1, self.watchdogTimerOvf)
+                watchdog = WatchdogTimer(0.1, self.watchdog_timer_ovf)
                 watchdog.stop()
                 while True:
                     while my_tty.in_waiting > 0:
-                        self.bytesBuffer += my_tty.read()
+                        self.bytes_buffer += my_tty.read()
                         watchdog.reset()
 
             except KeyboardInterrupt:
                 my_tty.close()
                 logger.info("\nProgramm wurde manuell beendet!\n")
 
-        except Exception as e:
+        except IOError as e:
             logger.info("serieller Port konnte nicht geöffnet werden: ", e)
-            exit()
+            sys.exit()
