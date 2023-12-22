@@ -9,12 +9,14 @@ import smllib
 from loguru import logger
 from detect import DetectSerial
 from meters.meter import ConnectionSettings, TelegramType
+from odt.odt_frame import OdtFrame
 
 
 class WatchdogTimer:
     """
     used to separate sml streams
     """
+
     def __init__(self, timeout: float, user_handler=None):
         self.timeout = timeout
         self.handler = user_handler if user_handler is not None else self.default_handler
@@ -42,7 +44,7 @@ class WatchdogTimer:
         raise AttributeError
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments, too-many-instance-attributes
 class SmlReader:
     """
     reader class
@@ -98,18 +100,24 @@ class SmlReader:
         self.log_file = log_file
         self.connection_settings = connection_settings
         self.telegram_type = telegram_type
+        self._stream = smllib.SmlStreamReader()
+        self._odt_stream = OdtFrame()
 
     def watchdog_timer_ovf(self, only_obis: bool = False):
         """
         Called when the sml stream ends
         :param only_obis: True -> extrace only the obis values
         """
+        if self.telegram_type == TelegramType.ODT:
+            sml = self._odt_stream.to_sml()
+            for character in sml:
+                self._stream.add(character.to_bytes(length=1, byteorder='big'))
+
         if self.log_bytes:
             with open(self.log_file, "ab") as myfile:
                 myfile.write(self.bytes_buffer)
-        stream = smllib.SmlStreamReader()
-        stream.add(self.bytes_buffer)
-        sml_frame = stream.get_frame()
+        self._stream.add(self.bytes_buffer)
+        sml_frame = self._stream.get_frame()
         if sml_frame is None:
             logger.info('Bytes missing')
             return
@@ -137,26 +145,32 @@ class SmlReader:
         """
         try:
             detect_serial = DetectSerial(ftdi_serial=self.ftdi_serial)  # Seriennummer der Lesekopfs
-            my_tty = serial.Serial(
+            device_tty = serial.Serial(
                 port=detect_serial.get_port(),
                 timeout=0,
                 **self.connection_settings
             )
-            logger.info(my_tty.portstr + " geöffnet\n\n")
-            my_tty.close()
-            my_tty.open()
+            logger.info(device_tty.portstr + " geöffnet\n\n")
+            device_tty.close()
+            device_tty.open()
             try:
-                my_tty.reset_input_buffer()
-                my_tty.reset_output_buffer()
+                device_tty.reset_input_buffer()
+                device_tty.reset_output_buffer()
                 watchdog = WatchdogTimer(0.1, self.watchdog_timer_ovf)
                 watchdog.stop()
                 while True:
-                    while my_tty.in_waiting > 0:
-                        self.bytes_buffer += my_tty.read()
+                    while device_tty.in_waiting > 0:
+                        self.bytes_buffer += device_tty.read()
+                        byte = device_tty.read(size=1)
+                        match self.telegram_type:
+                            case TelegramType.SML:
+                                self._stream.add(byte)
+                            case TelegramType.ODT:
+                                self._odt_stream.add(byte)
                         watchdog.reset()
 
             except KeyboardInterrupt:
-                my_tty.close()
+                device_tty.close()
                 logger.info("\nProgramm wurde manuell beendet!\n")
 
         except (IOError, TypeError) as e:

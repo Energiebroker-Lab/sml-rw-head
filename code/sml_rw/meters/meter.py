@@ -24,7 +24,7 @@ class TelegramType(Enum):
     Type of the meter telegram
     """
     SML = 'sml'
-    OD = 'od'
+    ODT = 'odt'
 
 
 class Meter:
