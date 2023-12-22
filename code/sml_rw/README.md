@@ -1,7 +1,9 @@
+TODO: update readmy (new commands + odt)
+
 # sml-reader
 Implementation example to read the sml data via the d0 interface. Sample data included.
 
-@Python 3.9
+@Python 3.11
 # cli
 ## detect 
 ### all ftdi devices
@@ -11,91 +13,91 @@ python run.py detect all
 ### single ftdi device
 ```commandline
 python run.py detect serial ftdiSerial
-foo@bar:~$ python run.py detect serial EB_DE_PROT_3
+foo@bar:~$ python run.py detect serial EB1337051
 ```
 ## Meter: mt175
 ### log bytes to file
 ```commandline
-python run.py mt175 logBytes ftdiSerial
-foo@bar:~$ python run.py mt175 logBytes EB_DE_PROT_3
+python run.py mt175 log_bytes ftdiSerial
+foo@bar:~$ python run.py mt175 log_bytes EB1337051
 ``` 
 ### log sml to cli
 ```commandline
-python run.py mt175 logCli ftdiSerial
-foo@bar:~$ python run.py mt175 logCli EB_DE_PROT_3
+python run.py mt175 log_cli ftdiSerial
+foo@bar:~$ python run.py mt175 log_cli EB1337051
 ``` 
 ### log sml to file
 ```commandline
-python run.py mt175 logSml ftdiSerial
-foo@bar:~$ python run.py mt175 logSml EB_DE_PROT_3
+python run.py mt175 log_sml ftdiSerial
+foo@bar:~$ python run.py mt175 log_sml EB1337051
 ``` 
 ### enter pin
 ```commandline
 python run.py mt175 pin ftdiSerial pin
-foo@bar:~$ python run.py mt175 pin EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py mt175 pin EB1337051 [1,2,3,4]
 ``` 
 ## Meter: mt681
 ### log bytes to file
 ```commandline
-python run.py mt681 logBytes ftdiSerial
-foo@bar:~$ python run.py mt681 logBytes EB_DE_PROT_3
+python run.py mt681 log_bytes ftdiSerial
+foo@bar:~$ python run.py mt681 log_bytes EB1337051
 ``` 
 ### log sml to cli
 ```commandline
-python run.py mt681 logCli ftdiSerial
-foo@bar:~$ python run.py mt681 logCli EB_DE_PROT_3
+python run.py mt681 log_cli ftdiSerial
+foo@bar:~$ python run.py mt681 log_cli EB1337051
 ``` 
 ### log sml to file
 ```commandline
-python run.py mt681 logSml ftdiSerial
-foo@bar:~$ python run.py mt681 logSml EB_DE_PROT_3
+python run.py mt681 log_sml ftdiSerial
+foo@bar:~$ python run.py mt681 log_sml EB1337051
 ``` 
 ### enter pin
 ```commandline
 python run.py mt681 pin ftdiSerial pin
-foo@bar:~$ python run.py mt681 pin EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py mt681 pin EB1337051 [1,2,3,4]
 ``` 
 ## Meter: ehz
 ### log bytes to file
 ```commandline
-python run.py ehz logBytes ftdiSerial
-foo@bar:~$ python run.py ehz logBytes EB_DE_PROT_3
+python run.py ehz log_bytes ftdiSerial
+foo@bar:~$ python run.py ehz log_bytes EB1337051
 ``` 
 ### log sml to cli
 ```commandline
-python run.py ehz logCli ftdiSerial
-foo@bar:~$ python run.py ehz logCli EB_DE_PROT_3
+python run.py ehz log_cli ftdiSerial
+foo@bar:~$ python run.py ehz log_cli EB1337051
 ``` 
 ### log sml to file
 ```commandline
-python run.py ehz logSml ftdiSerial
-foo@bar:~$ python run.py ehz logSml EB_DE_PROT_3
+python run.py ehz log_sml ftdiSerial
+foo@bar:~$ python run.py ehz log_sml EB1337051
 ``` 
 ### enter pin
 ```commandline
 python run.py ehz pin ftdiSerial pin
-foo@bar:~$ python run.py ehz pin EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py ehz pin EB1337051 [1,2,3,4]
 ``` 
 ## Meter: dd3
 ### log bytes to file
 ```commandline
-python run.py dd3 logBytes ftdiSerial
-foo@bar:~$ python run.py dd3 logBytes EB_DE_PROT_3
+python run.py dd3 log_bytes ftdiSerial
+foo@bar:~$ python run.py dd3 log_bytes EB1337051
 ``` 
 ### log sml to cli
 ```commandline
-python run.py dd3 logCli ftdiSerial
-foo@bar:~$ python run.py dd3 logCli EB_DE_PROT_3
+python run.py dd3 log_cli ftdiSerial
+foo@bar:~$ python run.py dd3 log_cli EB1337051
 ``` 
 ### log sml to file
 ```commandline
-python run.py dd3 logSml ftdiSerial
-foo@bar:~$ python run.py dd3 logSml EB_DE_PROT_3
+python run.py dd3 log_sml ftdiSerial
+foo@bar:~$ python run.py dd3 log_sml EB1337051
 ``` 
 ### enter pin
 ```commandline
 python run.py dd3 pin ftdiSerial pin
-foo@bar:~$ python run.py dd3 pin EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py dd3 pin EB1337051 [1,2,3,4]
 ``` 
 ### clear history data
 #### topics
@@ -103,7 +105,7 @@ foo@bar:~$ python run.py dd3 pin EB_DE_PROT_3 [1,2,3,4]
 * his
 ```commandline
 python run.py dd3 clear ftdiSerial pin topic
-foo@bar:~$ python run.py dd3 clear EB_DE_PROT_3 [1,2,3,4] e
+foo@bar:~$ python run.py dd3 clear EB1337051 [1,2,3,4] e
 ``` 
 ### show
 #### topics
@@ -117,7 +119,7 @@ foo@bar:~$ python run.py dd3 clear EB_DE_PROT_3 [1,2,3,4] e
 * pin
 ```commandline
 python run.py dd3 show ftdiSerial pin topic
-foo@bar:~$ python run.py dd3 show EB_DE_PROT_3 [1,2,3,4] e
+foo@bar:~$ python run.py dd3 show EB1337051 [1,2,3,4] e
 ``` 
 ### toggle
 #### topics
@@ -126,7 +128,7 @@ foo@bar:~$ python run.py dd3 show EB_DE_PROT_3 [1,2,3,4] e
 * pin
 ```commandline
 python run.py dd3 toggle ftdiSerial pin topic
-foo@bar:~$ python run.py dd3 toggle EB_DE_PROT_3 [1,2,3,4] info
+foo@bar:~$ python run.py dd3 toggle EB1337051 [1,2,3,4] info
 ``` 
 ### interactive mode
 #### interactive commands
@@ -136,28 +138,28 @@ foo@bar:~$ python run.py dd3 toggle EB_DE_PROT_3 [1,2,3,4] info
 * quit interactive mode -> exit
 ```commandline
 python run.py dd3 interactive ftdiSerial pin
-foo@bar:~$ python run.py dd3 interactive EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py dd3 interactive EB1337051 [1,2,3,4]
 ``` 
 ## Meter: EasyMeter
 ### log bytes to file
 ```commandline
-python run.py easy logBytes ftdiSerial
-foo@bar:~$ python run.py easy logBytes EB_DE_PROT_3
+python run.py easy log_bytes ftdiSerial
+foo@bar:~$ python run.py easy log_bytes EB1337051
 ``` 
 ### log sml to cli
 ```commandline
-python run.py easy logCli ftdiSerial
-foo@bar:~$ python run.py easy logCli EB_DE_PROT_3
+python run.py easy log_cli ftdiSerial
+foo@bar:~$ python run.py easy log_cli EB1337051
 ``` 
 ### log sml to file
 ```commandline
-python run.py easy logSml ftdiSerial
-foo@bar:~$ python run.py easy logSml EB_DE_PROT_3
+python run.py easy log_sml ftdiSerial
+foo@bar:~$ python run.py easy log_sml EB1337051
 ``` 
 ### enter pin
 ```commandline
 python run.py easy pin ftdiSerial pin
-foo@bar:~$ python run.py easy pin EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py easy pin EB1337051 [1,2,3,4]
 ``` 
 ### clear history data
 #### topics
@@ -165,7 +167,7 @@ foo@bar:~$ python run.py easy pin EB_DE_PROT_3 [1,2,3,4]
 * his
 ```commandline
 python run.py easy clear ftdiSerial pin topic
-foo@bar:~$ python run.py easy clear EB_DE_PROT_3 [1,2,3,4] e
+foo@bar:~$ python run.py easy clear EB1337051 [1,2,3,4] e
 ``` 
 ### show
 #### topics
@@ -179,7 +181,7 @@ foo@bar:~$ python run.py easy clear EB_DE_PROT_3 [1,2,3,4] e
 * pin
 ```commandline
 python run.py easy show ftdiSerial pin topic
-foo@bar:~$ python run.py easy show EB_DE_PROT_3 [1,2,3,4] e
+foo@bar:~$ python run.py easy show EB1337051 [1,2,3,4] e
 ``` 
 ### toggle
 #### topics
@@ -188,7 +190,7 @@ foo@bar:~$ python run.py easy show EB_DE_PROT_3 [1,2,3,4] e
 * pin
 ```commandline
 python run.py easy toggle ftdiSerial pin topic
-foo@bar:~$ python run.py easy toggle EB_DE_PROT_3 [1,2,3,4] info
+foo@bar:~$ python run.py easy toggle EB1337051 [1,2,3,4] info
 ``` 
 ### interactive mode
 #### interactive commands
@@ -198,5 +200,5 @@ foo@bar:~$ python run.py easy toggle EB_DE_PROT_3 [1,2,3,4] info
 * quit interactive mode -> exit
 ```commandline
 python run.py easy interactive ftdiSerial pin
-foo@bar:~$ python run.py easy interactive EB_DE_PROT_3 [1,2,3,4]
+foo@bar:~$ python run.py easy interactive EB1337051 [1,2,3,4]
 ``` 
