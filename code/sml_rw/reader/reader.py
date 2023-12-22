@@ -138,11 +138,8 @@ class SmlReader:
             detect_serial = DetectSerial(ftdi_serial=self.ftdi_serial)  # Seriennummer der Lesekopfs
             my_tty = serial.Serial(
                 port=detect_serial.get_port(),
-                baudrate=9600,
-                parity=serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE,
-                bytesize=serial.EIGHTBITS,
-                timeout=0
+                timeout=0,
+                **self.connection_settings
             )
             logger.info(my_tty.portstr + " geöffnet\n\n")
             my_tty.close()
