@@ -15,6 +15,9 @@ class DetectSerial:
         self.ftdi_serial = ftdi_serial
         self.port_device = None
         self._scan()
+        if self.port_device is None:
+            self.reattach_usb_device()
+            self._scan()
 
     def _scan(self):
         """

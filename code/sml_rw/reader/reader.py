@@ -137,7 +137,6 @@ class SmlReader:
         """
         try:
             detect_serial = DetectSerial(ftdi_serial=self.ftdi_serial)  # Seriennummer der Lesekopfs
-            detect_serial.reattach_usb_device()
             my_tty = serial.Serial(
                 port=detect_serial.get_port(),
                 timeout=0,
