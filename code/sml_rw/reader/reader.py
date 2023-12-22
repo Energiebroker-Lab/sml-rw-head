@@ -160,5 +160,5 @@ class SmlReader:
                 logger.info("\nProgramm wurde manuell beendet!\n")
 
         except (IOError, TypeError) as e:
-            logger.info("serieller Port konnte nicht geöffnet werden: ", e)
+            logger.info("serieller Port konnte nicht geöffnet werden: ", e.__traceback__)
             sys.exit()
