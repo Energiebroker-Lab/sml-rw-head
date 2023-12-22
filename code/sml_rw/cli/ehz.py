@@ -13,14 +13,28 @@ class EhzCli:
     """
     EHZ meter cli arguments
     """
+    meter = None
+
+    def get_meter(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
+        """
+        stores a meter instance in self.meter
+        """
+        self.meter = EHZ(ftdi_serial, pin)
+
     def log_cli(self, ftdi_serial: str):
         """
         logs sml to the stdout
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('logCli mode')
-        sml_reader = SmlReader(ftdi_serial)
+        self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        sml_reader = SmlReader(
+            ftdi_serial,
+            connection_settings=self.meter.connection_settings,
+            telegram_type=self.meter.telegram_type
+        )
         sml_reader.run()
+        del self.meter
 
     def log_sml(self, ftdi_serial: str):
         """
@@ -28,8 +42,16 @@ class EhzCli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('log_sml mode')
-        sml_reader = SmlReader(ftdi_serial, log_sml=True, log_file='logSmlEhz.log')
+        self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        sml_reader = SmlReader(
+            ftdi_serial,
+            log_sml=True,
+            log_file='logSmlEhz.log',
+            connection_settings=self.meter.connection_settings,
+            telegram_type=self.meter.telegram_type
+        )
         sml_reader.run()
+        del self.meter
 
     def log_bytes(self, ftdi_serial: str):
         """
@@ -37,8 +59,16 @@ class EhzCli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('log_bytes mode')
-        byte_reader = SmlReader(ftdi_serial, log_bytes=True, log_file='logBytesEhz.log')
+        self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        byte_reader = SmlReader(
+            ftdi_serial,
+            log_bytes=True,
+            log_file='logBytesEhz.log',
+            connection_settings=self.meter.connection_settings,
+            telegram_type=self.meter.telegram_type
+        )
         byte_reader.run()
+        del self.meter
 
     def pin(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
         """
@@ -46,7 +76,7 @@ class EhzCli:
         :param ftdi_serial: serial number of the ftdi device
         :param pin: the pin of the meter
         """
-        meter = EHZ(ftdi_serial, pin)
-        meter.set_debug(True)
-        meter.enter_pin()
-        del meter
+        self.get_meter(ftdi_serial, pin)
+        self.meter.set_debug(True)
+        self.meter.enter_pin()
+        del self.meter

@@ -7,6 +7,7 @@ import serial
 import smllib
 from loguru import logger
 from detect import DetectSerial
+from meters.meter import ConnectionSettings, TelegramType
 
 
 class WatchdogTimer:
@@ -40,6 +41,7 @@ class WatchdogTimer:
         raise AttributeError
 
 
+# pylint: disable=too-many-arguments
 class SmlReader:
     """
     reader class
@@ -85,12 +87,16 @@ class SmlReader:
             ftdi_serial,
             log_sml: bool = False,
             log_bytes: bool = False,
-            log_file='reader.log'
+            log_file='reader.log',
+            connection_settings: ConnectionSettings = None,
+            telegram_type: TelegramType = 'sml'
     ):
         self.ftdi_serial = ftdi_serial
         self.log_sml = log_sml
         self.log_bytes = log_bytes
         self.log_file = log_file
+        self.connection_settings = connection_settings
+        self.telegram_type = telegram_type
 
     def watchdog_timer_ovf(self, only_obis: bool = False):
         """

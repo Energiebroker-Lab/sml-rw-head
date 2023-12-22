@@ -5,7 +5,10 @@ from typing import List, Annotated
 
 from loguru import logger
 
-from meters.dd3 import DD3
+from meters.dd3_odt import DD3ODT
+from meters.dd3_odt_2way import DD3ODT2Way
+from meters.dd3_sml import DD3SML
+from meters.dd3_sml_2way import DD3SML2Way
 from reader.reader import SmlReader
 
 
@@ -14,14 +17,28 @@ class Dd3Cli:
     """
     DD3 meter cli arguments
     """
+    meter = None
+
+    def get_meter(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
+        """
+        stores a meter instance in self.meter
+        """
+        raise NotImplementedError
+
     def log_cli(self, ftdi_serial: str):
         """
         logs sml to the stdout
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('logCli mode')
-        sml_reader = SmlReader(ftdi_serial)
+        self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        sml_reader = SmlReader(
+            ftdi_serial,
+            connection_settings=self.meter.connection_settings,
+            telegram_type=self.meter.telegram_type
+        )
         sml_reader.run()
+        del self.meter
 
     def log_sml(self, ftdi_serial: str):
         """
@@ -29,9 +46,17 @@ class Dd3Cli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('log_sml mode')
-        sml_reader = SmlReader(ftdi_serial, log_sml=True, log_file='logSmlDd3.log')
+        self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        sml_reader = SmlReader(
+            ftdi_serial,
+            log_sml=True,
+            log_file='logSmlDd3.log',
+            connection_settings=self.meter.connection_settings,
+            telegram_type=self.meter.telegram_type
+        )
 
         sml_reader.run()
+        del self.meter
 
     def log_bytes(self, ftdi_serial: str):
         """
@@ -39,8 +64,16 @@ class Dd3Cli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('log_bytes mode')
-        byte_reader = SmlReader(ftdi_serial, log_bytes=True, log_file='logBytesDd3.log')
+        self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        byte_reader = SmlReader(
+            ftdi_serial,
+            log_bytes=True,
+            log_file='logBytesDd3.log',
+            connection_settings=self.meter.connection_settings,
+            telegram_type=self.meter.telegram_type
+        )
         byte_reader.run()
+        del self.meter
 
     def pin(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
         """
@@ -48,10 +81,10 @@ class Dd3Cli:
         :param ftdi_serial: serial number of the ftdi device
         :param pin: the pin of the meter
         """
-        meter = DD3(ftdi_serial, pin)
-        meter.set_debug(True)
-        meter.enter_pin()
-        del meter
+        self.get_meter(ftdi_serial, pin)
+        self.meter.set_debug(True)
+        self.meter.enter_pin()
+        del self.meter
 
     def clear(self, ftdi_serial: str, pin: Annotated[List[int], 4], topic: str):
         """
@@ -60,13 +93,13 @@ class Dd3Cli:
         :param pin: the pin of the meter
         :param topic: e or his
         """
-        meter = DD3(ftdi_serial, pin)
-        meter.set_debug(True)
+        self.get_meter(ftdi_serial, pin)
+        self.meter.set_debug(True)
         if topic == 'e':
-            meter.clear('e')
+            self.meter.clear('e')
         elif topic == 'his':
-            meter.toggle('his')
-        del meter
+            self.meter.toggle('his')
+        del self.meter
 
     def show(self, ftdi_serial: str, pin: Annotated[List[int], 4], topic: str):
         """
@@ -75,10 +108,10 @@ class Dd3Cli:
         :param pin: the pin of the meter
         :param topic: the topic (menu_item)
         """
-        meter = DD3(ftdi_serial, pin)
-        meter.set_debug(True)
-        meter.show(topic)
-        del meter
+        self.get_meter(ftdi_serial, pin)
+        self.meter.set_debug(True)
+        self.meter.show(topic)
+        del self.meter
 
     def toggle(self, ftdi_serial: str, pin: Annotated[List[int], 4], topic: str):
         """
@@ -87,10 +120,10 @@ class Dd3Cli:
         :param pin: the pin of the meter
         :param topic: info, p or pin
         """
-        meter = DD3(ftdi_serial, pin)
-        meter.set_debug(True)
-        meter.toggle(topic)
-        del meter
+        self.get_meter(ftdi_serial, pin)
+        self.meter.set_debug(True)
+        self.meter.toggle(topic)
+        del self.meter
 
     def interactive(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
         """
@@ -99,9 +132,9 @@ class Dd3Cli:
         :param pin: the pin of the meter
         """
         try:
-            meter = DD3(ftdi_serial, pin)
-            meter.set_debug(True)
-            meter.enter_pin()
+            self.get_meter(ftdi_serial, pin)
+            self.meter.set_debug(True)
+            self.meter.enter_pin()
             print("'exit' to quit")
             exit_loop = False
             while not exit_loop:
@@ -109,16 +142,69 @@ class Dd3Cli:
                 for c in pulse:
                     if c == ".":
                         print("sending short pulse")
-                        meter._short_pulse()
+                        self.meter._short_pulse()
                     elif c == "-":
                         print("sending long pulse")
-                        meter._long_pulse()
+                        self.meter._long_pulse()
                     elif c == " ":
                         print("sending pause")
-                        meter._pause()
+                        self.meter._pause()
                     elif c == "exit":
                         exit_loop = True
-            del meter
+            del self.meter
         except KeyboardInterrupt:
-            del meter
+            if self.meter:
+                del self.meter
             logger.info("\nProgramm wurde manuell beendet!\n")
+
+
+class Dd3CliSML(Dd3Cli):
+    """
+    DD3 meter SML
+    """
+    meter = None
+
+    def get_meter(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
+        """
+        stores a meter instance in self.meter
+        """
+        self.meter = DD3SML(ftdi_serial, pin)
+
+
+class Dd3CliSML2Way(Dd3Cli):
+    """
+    DD3 meter SML two-way
+    """
+    meter = None
+
+    def get_meter(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
+        """
+        stores a meter instance in self.meter
+        """
+        self.meter = DD3SML2Way(ftdi_serial, pin)
+
+
+class Dd3CliODT(Dd3Cli):
+    """
+    DD3 meter ODT
+    """
+    meter = None
+
+    def get_meter(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
+        """
+        stores a meter instance in self.meter
+        """
+        self.meter = DD3ODT(ftdi_serial, pin)
+
+
+class Dd3CliODT2Way(Dd3Cli):
+    """
+    DD3 meter ODT two-way
+    """
+    meter = None
+
+    def get_meter(self, ftdi_serial: str, pin: Annotated[List[int], 4]):
+        """
+        stores a meter instance in self.meter
+        """
+        self.meter = DD3ODT2Way(ftdi_serial, pin)
