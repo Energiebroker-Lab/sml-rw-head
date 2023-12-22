@@ -2,6 +2,7 @@
 sml reader
 """
 import sys
+import traceback
 from threading import Timer
 import serial
 import smllib
@@ -160,5 +161,8 @@ class SmlReader:
                 logger.info("\nProgramm wurde manuell beendet!\n")
 
         except (IOError, TypeError) as e:
-            logger.info("serieller Port konnte nicht geöffnet werden: ", e.__traceback__)
+            logger.info(
+                f"serieller Port konnte nicht geöffnet werden: {e}"
+            )
+            traceback.print_exc()
             sys.exit()
