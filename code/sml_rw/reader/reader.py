@@ -136,6 +136,7 @@ class SmlReader:
         """
         try:
             detect_serial = DetectSerial(ftdi_serial=self.ftdi_serial)  # Seriennummer der Lesekopfs
+            detect_serial.reattach_usb_device(ftdi_serial=self.ftdi_serial)
             my_tty = serial.Serial(
                 port=detect_serial.get_port(),
                 timeout=0,
@@ -158,6 +159,6 @@ class SmlReader:
                 my_tty.close()
                 logger.info("\nProgramm wurde manuell beendet!\n")
 
-        except IOError as e:
+        except (IOError, TypeError) as e:
             logger.info("serieller Port konnte nicht geöffnet werden: ", e)
             sys.exit()

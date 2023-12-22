@@ -3,9 +3,10 @@ ftdi detection module
 """
 import serial  # For serial communication
 import serial.tools.list_ports  # For listing available serial ports
+import usb
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods, protected-access
 class DetectSerial:
     """
     Scans for the ftdi device with the supplied serial number
@@ -30,3 +31,34 @@ class DetectSerial:
         :return: Serial port
         """
         return self.port_device
+
+    def _has_serial(self, dev) -> bool:
+        """
+        Filter by self._ftdi_serial
+        :param dev: device
+        :return: True if the device has the serial number self._ftdi_serial
+        """
+        if self.ftdi_serial is None:
+            return False
+        dev_serial = usb.core._try_get_string(dev, dev.iSerialNumber)
+        if dev_serial == self.ftdi_serial:
+            return True
+        return False
+
+    def _get_usb_device_by_serial(self, ftdi_serial: str):
+        """
+        returns usb device with given serial number
+        :param ftdi_serial: serial number of the ftdi device
+        """
+        self.ftdi_serial = ftdi_serial
+        device = usb.core.find(custom_match=self._has_serial)
+        return device
+
+    def reattach_usb_device(self, ftdi_serial: str):
+        """
+        reattach usb device to kernel
+        :param ftdi_serial: serialnumber of the ftdi device
+        """
+        device = self._get_usb_device_by_serial(ftdi_serial)
+        if device is not None:
+            device.attach_kernel_driver(0)
