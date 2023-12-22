@@ -1,3 +1,5 @@
+TODO: update readmy (new commands + odt)
+
 # sml-reader
 Implementation example to read the sml data via the d0 interface. Sample data included.
 

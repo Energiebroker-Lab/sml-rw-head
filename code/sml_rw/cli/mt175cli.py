@@ -27,6 +27,9 @@ class Mt175Cli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('logCli mode')
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         sml_reader = SmlReader(
             ftdi_serial,
             connection_settings=self.meter.connection_settings,
@@ -41,6 +44,9 @@ class Mt175Cli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('log_sml mode')
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         sml_reader = SmlReader(
             ftdi_serial,
             log_sml=True,
@@ -58,6 +64,9 @@ class Mt175Cli:
         :param ftdi_serial: serial number of the ftdi device
         """
         logger.info('log_bytes mode')
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         byte_reader = SmlReader(
             ftdi_serial,
             log_bytes=True,
@@ -75,6 +84,9 @@ class Mt175Cli:
         :param pin: the pin of the meter
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         self.meter.enter_pin()
         del self.meter

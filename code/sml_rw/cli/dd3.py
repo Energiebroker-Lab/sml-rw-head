@@ -32,6 +32,9 @@ class Dd3Cli:
         """
         logger.info('logCli mode')
         self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         sml_reader = SmlReader(
             ftdi_serial,
             connection_settings=self.meter.connection_settings,
@@ -47,6 +50,9 @@ class Dd3Cli:
         """
         logger.info('log_sml mode')
         self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         sml_reader = SmlReader(
             ftdi_serial,
             log_sml=True,
@@ -65,6 +71,9 @@ class Dd3Cli:
         """
         logger.info('log_bytes mode')
         self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         byte_reader = SmlReader(
             ftdi_serial,
             log_bytes=True,
@@ -82,6 +91,9 @@ class Dd3Cli:
         :param pin: the pin of the meter
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         self.meter.enter_pin()
         del self.meter
@@ -94,6 +106,9 @@ class Dd3Cli:
         :param topic: e or his
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         if topic == 'e':
             self.meter.clear('e')
@@ -109,6 +124,9 @@ class Dd3Cli:
         :param topic: the topic (menu_item)
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         self.meter.show(topic)
         del self.meter
@@ -121,6 +139,9 @@ class Dd3Cli:
         :param topic: info, p or pin
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         self.meter.toggle(topic)
         del self.meter
@@ -133,6 +154,9 @@ class Dd3Cli:
         """
         try:
             self.get_meter(ftdi_serial, pin)
+            if self.meter is None:
+                logger.error("Meter instance not initialized")
+                return
             self.meter.set_debug(True)
             self.meter.enter_pin()
             print("'exit' to quit")

@@ -29,6 +29,9 @@ class EasyCli:
         """
         logger.info('logCli mode')
         self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         sml_reader = SmlReader(ftdi_serial,
                                connection_settings=self.meter.connection_settings,
                                telegram_type=self.meter.telegram_type
@@ -43,6 +46,9 @@ class EasyCli:
         """
         logger.info('log_sml mode')
         self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         sml_reader = SmlReader(ftdi_serial,
                                log_sml=True,
                                log_file='logSmlEasy.log',
@@ -60,6 +66,9 @@ class EasyCli:
         """
         logger.info('log_bytes mode')
         self.get_meter(ftdi_serial, [0, 0, 0, 0])
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         byte_reader = SmlReader(ftdi_serial,
                                 log_bytes=True,
                                 log_file='logBytesEasy.log',
@@ -76,6 +85,9 @@ class EasyCli:
         :param pin: the pin of the meter
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         self.meter.enter_pin(pin)
         del self.meter
@@ -88,6 +100,9 @@ class EasyCli:
         :param topic: e or his
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         if topic == 'e':
             self.meter.clear(pin, 'e')
@@ -103,6 +118,9 @@ class EasyCli:
         :param topic: the topic (menu_item)
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         if topic == 'e':
             self.meter.show(pin, 'e')
@@ -130,6 +148,9 @@ class EasyCli:
         :param topic: info, p or pin
         """
         self.get_meter(ftdi_serial, pin)
+        if self.meter is None:
+            logger.error("Meter instance not initialized")
+            return
         self.meter.set_debug(True)
         if topic == 'info':
             self.meter.toggle(pin, 'info')
@@ -147,6 +168,9 @@ class EasyCli:
         """
         try:
             self.get_meter(ftdi_serial, pin)
+            if self.meter is None:
+                logger.error("Meter instance not initialized")
+                return
             self.meter.set_debug(True)
             self.meter.enter_pin(pin)
             print("'exit' to quit")
