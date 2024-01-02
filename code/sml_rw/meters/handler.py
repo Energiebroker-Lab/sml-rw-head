@@ -9,6 +9,7 @@ from meters.dd3_odt import DD3ODT
 from meters.dd3_odt_2way import DD3ODT2Way
 from meters.dd3_sml import DD3SML
 from meters.dd3_sml_2way import DD3SML2Way
+from meters.easy import Easy
 from meters.ehz import EHZ
 from meters.mt175 import MT175
 from meters.mt681 import MT681
@@ -29,6 +30,8 @@ def toggle_info(meter_type: str, ftdi_serial: str, pin: Annotated[List[int], 4])
             meter = MT175(ftdi_serial, pin)
         case 'ehz':
             meter = EHZ(ftdi_serial, pin)
+        case 'easy':
+            meter = Easy(ftdi_serial, pin)
         case 'dd3_sml':
             meter = DD3SML(ftdi_serial, pin)
         case 'dd3_sml_2way':
