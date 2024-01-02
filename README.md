@@ -3,7 +3,7 @@
 ## Overview
 
 **sml-rw-head** is a versatile read-write module designed to attach to power meters via a magnet.
-It reads the SML (Smart Message Language) or ODT (Object Definition Table) stream from the D0 interface of the meter.
+It reads the SML (Smart Message Language) or ODT stream from the D0 interface of the meter.
 Additionally, the device is equipped to send pulses for entering the PIN or navigating through the menu of the meter
 and for example toggle the info mode.
 
