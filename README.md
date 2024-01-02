@@ -1,5 +1,5 @@
 # sml-rw-head
-
+![explosion](./hardware/d0reader/images/explosion1.png)
 ## Overview
 
 **sml-rw-head** is a versatile read-write module designed to attach to power meters via a magnet.
