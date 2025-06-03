@@ -160,7 +160,7 @@ class SmlReader:
                 watchdog.stop()
                 while True:
                     while device_tty.in_waiting > 0:
-                        self.bytes_buffer += device_tty.read()
+                        # self.bytes_buffer += device_tty.read()
                         byte = device_tty.read(size=1)
                         match self.telegram_type:
                             case TelegramType.SML:
